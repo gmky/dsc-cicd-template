@@ -1,0 +1,11 @@
+{{- if .Values.kongRateLimit.enabled -}}
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: {{ .Values.kongRateLimit.name }}
+config:
+  {{- with .Values.kongRateLimit.config }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+plugin: rate-limiting
+{{- end }}

@@ -1,0 +1,86 @@
+stages:
+  - build
+  - deploy
+
+workflow:
+  rules:
+    - if: $GLOBAL_CI == 'off'
+      when: never
+    - if: $GROUP_CI == 'off'
+      when: never
+    - if: $REPO_CI == 'off'
+      when: never
+    - when: always
+
+before_script:
+  - source shared/env.sh
+  - chmod +x shared/before-script.sh && ./shared/before-script.sh
+
+after_script:
+  - source shared/env.sh
+  - chmod +x shared/after-script.sh && ./shared/after-script.sh
+
+# Auto run on being trigger by source code CI/CD
+auto-build:
+  tags:
+    - dev-build
+  environment: development
+  stage: build
+  variables:
+    SHARED_PATH: /builds/${CI_PROJECT_PATH}
+  script:
+    - source $BUILD_PATH/env.sh
+    - chmod +x $BUILD_PATH/*.sh
+    - $BUILD_PATH/build.sh
+  only:
+    refs:
+      - triggers
+    variables:
+      - $STAGE=="build"
+
+auto-deploy:
+  tags:
+    - dev-deploy
+  environment: development
+  image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
+  stage: deploy
+  script:
+    - source $DEPLOY_PATH/env.sh
+    - mkdir -m 600 -p /root/.kube
+    - chmod +x $DEPLOY_PATH/config/get-config.sh && $DEPLOY_PATH/config/get-config.sh
+    - helm upgrade --install --set image.tag=${IMAGE_TAG} --set image.repository=${CI_REGISTRY_URI} --set logging.output.logstashPrefix=${LOGSTASH_PREFIX} --wait -n $NAMESPACE $HELM_RELEASE_NAME $DEPLOY_PATH/helm
+  only:
+    refs:
+      - triggers
+    variables:
+      - $STAGE=="deploy"
+
+# Manually
+manual-build:
+  tags:
+    - dev-build
+  environment: development
+  stage: build
+  variables:
+    SHARED_PATH: /builds/$CI_PROJECT_PATH
+    DOCKER_TAG: dev-d9a4a7ef
+  script:
+    - source $BUILD_PATH/env.sh
+    - chmod +x $BUILD_PATH/*.sh
+    - $BUILD_PATH/build.sh
+  when: manual
+
+manual-deploy:
+  variables:
+    DOCKER_TAG: dev-d9a4a7ef
+  tags:
+    - dev-deploy
+  environment: development
+  image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
+  stage: deploy
+  script:
+    - source $DEPLOY_PATH/env.sh
+    - mkdir -m 600 -p /root/.kube
+    - chmod +x $DEPLOY_PATH/config/get-config.sh && $DEPLOY_PATH/config/get-config.sh
+    - helm upgrade --install --set image.tag=${IMAGE_TAG} --set image.repository=${CI_REGISTRY_URI} --set logging.output.logstashPrefix=${LOGSTASH_PREFIX} --wait -n $NAMESPACE $HELM_RELEASE_NAME $DEPLOY_PATH/helm
+  when: manual

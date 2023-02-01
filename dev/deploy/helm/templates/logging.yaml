@@ -1,0 +1,65 @@
+{{- if .Values.logging.enabled -}}
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Flow
+metadata:
+  name: {{ .Chart.Name }}
+  annotations: {}
+  labels: {}
+spec:
+  filters:
+    - record_transformer:
+        enable_ruby: true
+        records:
+          - log: '${ record["log"].gsub(/\[(\d+)(\;(\d+))?m/, "") }'
+  globalOutputRefs: []
+  localOutputRefs:
+    - {{ .Chart.Name }}
+  match:
+    - select:
+        container_names:
+          - {{ .Chart.Name }}
+        hosts: []
+        labels: {}
+{{- end }}
+---
+{{- if .Values.logging.enabled -}}
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Output
+metadata:
+  name: {{ .Chart.Name }}
+  annotations: {}
+  labels: {}
+spec:
+  elasticsearch:
+    ca_file:
+      mountFrom:
+        secretKeyRef:
+          key: ca.crt
+          name: {{ .Values.logging.output.certSecretName }}
+    client_cert:
+      mountFrom:
+        secretKeyRef:
+          key: tls.crt
+          name: {{ .Values.logging.output.certSecretName }}
+    client_key:
+      mountFrom:
+        secretKeyRef:
+          key: tls.key
+          name: {{ .Values.logging.output.certSecretName }}
+    host: {{ .Values.logging.output.host }}
+    logstash_dateformat: '%Y-%m-%d'
+    logstash_format: true
+    logstash_prefix: {{ .Values.logging.output.logstashPrefix }}
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: {{ .Values.logging.output.credentialSecretName }}
+    port: {{ .Values.logging.output.port }}
+    scheme: {{ .Values.logging.output.scheme }}
+    user: {{ .Values.logging.output.user }}
+    {{- with .Values.logging.output.buffer }}
+    buffer:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end }}
