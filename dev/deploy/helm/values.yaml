@@ -29,6 +29,9 @@ hostAliases:
   - ip: 172.28.8.70
     hostnames:
       - upload.dsc.com
+  - ip: 172.28.8.50
+    hostnames:
+      - dev-push1.centos7
 
 serviceAccount:
   # Specifies whether a service account should be created

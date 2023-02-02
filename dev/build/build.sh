@@ -10,7 +10,7 @@ docker run --rm \
   -v ~/.sonar:/var/maven/.sonar \
   -v $(pwd)/tmp:/app \
   -w /app \
-  --add-host=${SONART_HOST_ALIAS} \
+  --add-host=${SONAR_HOST_ALIAS} \
   -e NO_PROXY \
   -e HTTP_PROXY -e HTTPS_PROXY \
   -e MAVEN_CONFIG=/var/maven/.m2 \

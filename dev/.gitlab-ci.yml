@@ -29,7 +29,6 @@ auto-build:
   variables:
     SHARED_PATH: /builds/${CI_PROJECT_PATH}
   script:
-    - source $BUILD_PATH/env.sh
     - chmod +x $BUILD_PATH/*.sh
     - $BUILD_PATH/build.sh
   only:
@@ -45,7 +44,6 @@ auto-deploy:
   image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
   stage: deploy
   script:
-    - source $DEPLOY_PATH/env.sh
     - mkdir -m 600 -p /root/.kube
     - chmod +x $DEPLOY_PATH/config/get-config.sh && $DEPLOY_PATH/config/get-config.sh
     - helm upgrade --install --set image.tag=${IMAGE_TAG} --set image.repository=${CI_REGISTRY_URI} --set logging.output.logstashPrefix=${LOGSTASH_PREFIX} --wait -n $NAMESPACE $HELM_RELEASE_NAME $DEPLOY_PATH/helm
@@ -65,7 +63,6 @@ manual-build:
     SHARED_PATH: /builds/$CI_PROJECT_PATH
     DOCKER_TAG: dev-d9a4a7ef
   script:
-    - source $BUILD_PATH/env.sh
     - chmod +x $BUILD_PATH/*.sh
     - $BUILD_PATH/build.sh
   when: manual
@@ -79,7 +76,6 @@ manual-deploy:
   image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
   stage: deploy
   script:
-    - source $DEPLOY_PATH/env.sh
     - mkdir -m 600 -p /root/.kube
     - chmod +x $DEPLOY_PATH/config/get-config.sh && $DEPLOY_PATH/config/get-config.sh
     - helm upgrade --install --set image.tag=${IMAGE_TAG} --set image.repository=${CI_REGISTRY_URI} --set logging.output.logstashPrefix=${LOGSTASH_PREFIX} --wait -n $NAMESPACE $HELM_RELEASE_NAME $DEPLOY_PATH/helm
