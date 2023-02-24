@@ -12,8 +12,6 @@ after_script:
 
 # Auto run on being trigger by source code CI/CD
 auto-build:
-  tags:
-    - dev-build
   rules:
     - if: $GLOBAL_CI == 'off'
       when: manual
@@ -22,7 +20,9 @@ auto-build:
     - if: $REPO_CI == 'off'
       when: manual
     - when: always
-  environment: development
+  tags:
+    - prod-build
+  environment: staging
   stage: build
   variables:
     SHARED_PATH: /builds/${CI_PROJECT_PATH}
@@ -37,7 +37,7 @@ auto-build:
 
 auto-deploy:
   tags:
-    - dev-deploy
+    - prod-deploy
   rules:
     - if: $GLOBAL_CI == 'off'
       when: manual
@@ -46,7 +46,7 @@ auto-deploy:
     - if: $REPO_CI == 'off'
       when: manual
     - when: always
-  environment: development
+  environment: staging
   image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
   stage: deploy
   script:
@@ -62,8 +62,8 @@ auto-deploy:
 # Manually
 manual-build:
   tags:
-    - dev-build
-  environment: development
+    - prod-build
+  environment: staging
   stage: build
   variables:
     SHARED_PATH: /builds/$CI_PROJECT_PATH
@@ -77,8 +77,8 @@ manual-deploy:
   variables:
     DOCKER_TAG: dev-d9a4a7ef
   tags:
-    - dev-deploy
-  environment: development
+    - prod-deploy
+  environment: staging
   image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
   stage: deploy
   script:
