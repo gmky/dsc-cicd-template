@@ -19,6 +19,13 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: dev
 
+database:
+  enabled: true
+  name: dsc_template-database-secret
+  url: "jdbc:mysql://drdb-cahnfc:3306/cahnfc"
+  username: "cahnfc_write"
+  password: "P8fg3qd5UepU"
+
 ports:
   - name: http
     # PLACEHOLDER

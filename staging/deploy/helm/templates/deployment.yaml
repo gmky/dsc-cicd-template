@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dsc_template.fullname" . }}
+  name: {{ include "cahnfc-auth-service.fullname" . }}
   labels:
-    {{- include "dsc_template.labels" . | nindent 4 }}
+    {{- include "cahnfc-auth-service.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "dsc_template.selectorLabels" . | nindent 6 }}
+      {{- include "cahnfc-auth-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,14 +18,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "dsc_template.selectorLabels" . | nindent 8 }}
+        {{- include "cahnfc-auth-service.selectorLabels" . | nindent 8 }}
         dockerTag: {{ .Chart.AppVersion }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "dsc_template.serviceAccountName" . }}
+      serviceAccountName: {{ include "cahnfc-auth-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

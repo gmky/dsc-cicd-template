@@ -14,7 +14,7 @@ docker run --rm \
   -e NO_PROXY \
   -e HTTP_PROXY -e HTTPS_PROXY \
   -e MAVEN_CONFIG=/var/maven/.m2 \
-  maven:3.8.3-openjdk-17-slim \
+  maven:3.6.2-ibmjava-8-alpine \
   mvn -Pdev clean package sonar:sonar \
   -Duser.home=/var/maven \
   -Dmaven.repo.local=/var/maven/.m2/repository \

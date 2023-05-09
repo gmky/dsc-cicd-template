@@ -68,7 +68,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
     konghq.com/strip-path: "false"
     # PLACEHOLDER
-    konghq.com/plugins: mdbd-admin-service-rate-limit
+    konghq.com/plugins: dsc_template-rate-limit
   hosts:
     # PLACEHOLDER
     - host: mdbd-api.campdi.vn
@@ -95,7 +95,7 @@ resources:
 kongRateLimit:
   enabled: true
   # PLACEHOLDER
-  name: mdbd-admin-service-rate-limit
+  name: dsc_template-rate-limit
   config:
     minute: 1000
     hour: 10000

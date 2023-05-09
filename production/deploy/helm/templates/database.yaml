@@ -1,0 +1,11 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.database.name }}
+type: Opaque
+data:
+  SPRING_DATASOURCE_URL: {{ .Values.database.url | b64enc }}
+  SPRING_DATASOURCE_USERNAME: {{ .Values.database.username | b64enc }}
+  SPRING_DATASOURCE_PASSWORD: {{ .Values.database.password | b64enc }}
+{{- end }}

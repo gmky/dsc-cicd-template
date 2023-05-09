@@ -15,13 +15,11 @@ auto-build:
   tags:
     - dev-build
   rules:
-    - if: $GLOBAL_CI == 'off'
-      when: manual
-    - if: $GROUP_CI == 'off'
-      when: manual
-    - if: $REPO_CI == 'off'
-      when: manual
-    - when: always
+    - if: $GLOBAL_CI == "off" || $GROUP_CI == "off" || $REPO_CI == "off"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $STAGE == "build"
+      when: always
+    - when: never
   environment: development
   stage: build
   variables:
@@ -29,23 +27,16 @@ auto-build:
   script:
     - chmod +x $BUILD_PATH/*.sh
     - $BUILD_PATH/build.sh
-  only:
-    refs:
-      - triggers
-    variables:
-      - $STAGE=="build"
 
 auto-deploy:
   tags:
     - dev-deploy
   rules:
-    - if: $GLOBAL_CI == 'off'
-      when: manual
-    - if: $GROUP_CI == 'off'
-      when: manual
-    - if: $REPO_CI == 'off'
-      when: manual
-    - when: always
+    - if: $GLOBAL_CI == "off" || $GROUP_CI == "off" || $REPO_CI == "off"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $STAGE == "deploy"
+      when: always
+    - when: never
   environment: development
   image: 172.28.8.132:5002/system/k8s-config/helm:3.7.2
   stage: deploy
@@ -53,11 +44,6 @@ auto-deploy:
     - mkdir -m 600 -p /root/.kube
     - chmod +x $DEPLOY_PATH/config/get-config.sh && $DEPLOY_PATH/config/get-config.sh
     - helm upgrade --install --set image.tag=${IMAGE_TAG} --set image.repository=${CI_REGISTRY_URI} --set logging.output.logstashPrefix=${LOGSTASH_PREFIX} --wait -n $NAMESPACE $HELM_RELEASE_NAME $DEPLOY_PATH/helm
-  only:
-    refs:
-      - triggers
-    variables:
-      - $STAGE=="deploy"
 
 # Manually
 manual-build:

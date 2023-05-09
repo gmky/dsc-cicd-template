@@ -38,6 +38,11 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if .Values.database.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.database.name }}
+          {{- end }}
           {{- with .Values.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
